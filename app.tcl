@@ -1,4 +1,6 @@
+#!/usr/bin/wish
 set result "asking ts..."
+set dlmode "Filme Musikvideos Youtube"
 
 # upper line
 frame .input -borderwidth 1 -relief raised
@@ -10,10 +12,14 @@ pack .input.newvid -side left
 text .input.t -width 80 -height 1
 pack .input.t -side left
 
+listbox .input.l -height 3 -selectmode single -listvariable dlmode -activestyle dotbox
+pack .input.l -side left
+.input.l selection set 0
+
 button .input.r -text "Refresh" -command ts_read
 pack .input.r -side right
 
-button .input.c -text "Clear" -command tf_clear
+button .input.c -text "Clear" -command app_clear
 pack .input.c -side right
 
 button .input.b -text "Enqueue" -command {ts_add [.input.t get 1.0 end]}
@@ -28,7 +34,8 @@ pack .show.t -expand 0 -fill both
 
 # add url to ts
 proc ts_add {url} {
-    exec /usr/local/bin/ts youtube-dl $url
+    set sel [.input.l get [.input.l curselection]]
+    exec /usr/local/bin/ts youtube-dl -o ~/Videos/$sel/%(title)s.%(ext)s $url
     ts_read
 }
 
@@ -52,8 +59,10 @@ proc ts_update {} {
 }
 
 # clear input textfield
-proc tf_clear {} {
+proc app_clear {} {
     .input.t delete 1.0 end
+    .input.l selection set 0
+    exec ts -C
 }
 
 # start updating process
