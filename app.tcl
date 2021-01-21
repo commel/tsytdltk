@@ -1,6 +1,7 @@
 #!/usr/bin/wish
 set result "asking ts..."
 set dlmode "Filme Musikvideos Youtube"
+set lastupdate "not set"
 
 # upper line
 frame .input -borderwidth 1 -relief raised
@@ -32,6 +33,15 @@ pack .show -side left
 text .show.t
 pack .show.t -expand 0 -fill both
 
+label .show.update -textvariable lastupdate
+pack .show.update
+
+proc update_time {} {
+    global lastupdate
+    set systemtime [clock seconds]
+    set lastupdate [clock format $systemtime -format %H:%M:%S]
+}
+
 # add url to ts
 proc ts_add {url} {
     set sel [.input.l get [.input.l curselection]]
@@ -53,6 +63,8 @@ proc ts_update {} {
     .show.t delete 1.0 end
     .show.t insert end $result
     .show.t configure -state disabled
+
+    update_time
 
     # restart update process
     after 1000 ts_read
