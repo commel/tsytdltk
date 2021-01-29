@@ -1,6 +1,6 @@
 #!/usr/bin/wish
 set result "asking ts..."
-set dlmode "Filme Musikvideos Youtube"
+set dlmode "Filme Musikvideos Youtube Musik"
 set lastupdate "not set"
 
 # upper line
@@ -26,15 +26,17 @@ pack .input.c -side right
 button .input.b -text "Enqueue" -command {ts_add [.input.t get 1.0 end]}
 pack .input.b -side right
 
-# content
+# content frame
 frame .show -borderwidth 1 -relief sunken
 pack .show -side left
 
-text .show.t
-pack .show.t -expand 0 -fill both
-
+# timestamp
 label .show.update -textvariable lastupdate
-pack .show.update
+pack .show.update -side bottom
+
+# content
+text .show.t
+pack .show.t -expand 0 -fill both -side bottom
 
 proc update_time {} {
     global lastupdate
@@ -45,7 +47,11 @@ proc update_time {} {
 # add url to ts
 proc ts_add {url} {
     set sel [.input.l get [.input.l curselection]]
-    exec /usr/local/bin/ts youtube-dl -o ~/Videos/$sel/%(title)s.%(ext)s $url
+    if {$sel == "Musik"} {
+	exec /usr/local/bin/ts youtube-dl --audio-format=mp3 -x -o ~/$sel/rip/%(title)s.%(ext)s $url	
+    } else {
+	exec /usr/local/bin/ts youtube-dl -o ~/Videos/$sel/%(title)s.%(ext)s $url
+    }
     ts_read
 }
 
